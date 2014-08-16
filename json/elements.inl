@@ -140,14 +140,14 @@ inline UnknownElement& UnknownElement::operator = (const UnknownElement& unknown
    return *this;
 }
 
-inline UnknownElement& UnknownElement::operator[] (const std::string& key)
+inline UnknownElement& UnknownElement::operator[] (const std::wstring& key)
 {
    // the people want an object. make us one if we aren't already
    Object& object = ConvertTo<Object>();
    return object[key];
 }
 
-inline const UnknownElement& UnknownElement::operator[] (const std::string& key) const
+inline const UnknownElement& UnknownElement::operator[] (const std::wstring& key) const
 {
    // throws if we aren't an object
    const Object& object = CastTo<Object>();
@@ -212,7 +212,7 @@ inline bool UnknownElement::operator == (const UnknownElement& element) const
 // Object members
 
 
-inline Object::Member::Member(const std::string& nameIn, const UnknownElement& elementIn) :
+inline Object::Member::Member(const std::wstring& nameIn, const UnknownElement& elementIn) :
    name(nameIn), element(elementIn) {}
 
 inline bool Object::Member::operator == (const Member& member) const 
@@ -224,13 +224,13 @@ inline bool Object::Member::operator == (const Member& member) const
 class Object::Finder : public std::unary_function<Object::Member, bool>
 {
 public:
-   Finder(const std::string& name) : m_name(name) {}
+   Finder(const std::wstring& name) : m_name(name) {}
    bool operator () (const Object::Member& member) {
       return member.name == m_name;
    }
 
 private:
-   std::string m_name;
+   std::wstring m_name;
 };
 
 
@@ -243,12 +243,12 @@ inline Object::const_iterator Object::End() const { return m_Members.end(); }
 inline size_t Object::Size() const { return m_Members.size(); }
 inline bool Object::Empty() const { return m_Members.empty(); }
 
-inline Object::iterator Object::Find(const std::string& name) 
+inline Object::iterator Object::Find(const std::wstring& name) 
 {
    return std::find_if(m_Members.begin(), m_Members.end(), Finder(name));
 }
 
-inline Object::const_iterator Object::Find(const std::string& name) const 
+inline Object::const_iterator Object::Find(const std::wstring& name) const 
 {
    return std::find_if(m_Members.begin(), m_Members.end(), Finder(name));
 }
@@ -262,7 +262,10 @@ inline Object::iterator Object::Insert(const Member& member, iterator itWhere)
 {
    iterator it = Find(member.name);
    if (it != m_Members.end())
-      throw Exception("Object member already exists: " + member.name);
+   {
+       std::string sMessage = "Object member already exists: " + member.name;
+       throw Exception(sMessage);
+   }
 
    it = m_Members.insert(itWhere, member);
    return it;
@@ -273,7 +276,7 @@ inline Object::iterator Object::Erase(iterator itWhere)
    return m_Members.erase(itWhere);
 }
 
-inline UnknownElement& Object::operator [](const std::string& name)
+inline UnknownElement& Object::operator [](const std::wstring& name)
 {
 
    iterator it = Find(name);
@@ -285,11 +288,14 @@ inline UnknownElement& Object::operator [](const std::string& name)
    return it->element;      
 }
 
-inline const UnknownElement& Object::operator [](const std::string& name) const 
+inline const UnknownElement& Object::operator [](const std::wstring& name) const 
 {
    const_iterator it = Find(name);
    if (it == End())
-      throw Exception("Object member not found: " + name);
+   {
+       std::string sMessage = "Object member not found: " + name;
+       throw Exception(sMessage);
+   }
    return it->element;
 }
 

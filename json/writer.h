@@ -17,19 +17,19 @@ namespace json
 class Writer : private ConstVisitor
 {
 public:
-   static void Write(const Object& object, std::ostream& ostr);
-   static void Write(const Array& array, std::ostream& ostr);
-   static void Write(const String& string, std::ostream& ostr);
-   static void Write(const Number& number, std::ostream& ostr);
-   static void Write(const Boolean& boolean, std::ostream& ostr);
-   static void Write(const Null& null, std::ostream& ostr);
-   static void Write(const UnknownElement& elementRoot, std::ostream& ostr);
+   static void Write(const Object& object, std::wostream& ostr);
+   static void Write(const Array& array, std::wostream& ostr);
+   static void Write(const String& string, std::wostream& ostr);
+   static void Write(const Number& number, std::wostream& ostr);
+   static void Write(const Boolean& boolean, std::wostream& ostr);
+   static void Write(const Null& null, std::wostream& ostr);
+   static void Write(const UnknownElement& elementRoot, std::wostream& ostr);
 
 private:
-   Writer(std::ostream& ostr);
+   Writer(std::wostream& ostr);
 
    template <typename ElementTypeT>
-   static void Write_i(const ElementTypeT& element, std::ostream& ostr);
+   static void Write_i(const ElementTypeT& element, std::wostream& ostr);
 
    void Write_i(const Object& object);
    void Write_i(const Array& array);
@@ -46,7 +46,7 @@ private:
    virtual void Visit(const Boolean& boolean);
    virtual void Visit(const Null& null);
 
-   std::ostream& m_ostr;
+   std::wostream& m_ostr;
    int m_nTabDepth;
 };
 

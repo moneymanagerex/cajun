@@ -56,15 +56,15 @@ public:
 
 
    // if you know what the document looks like, call one of these...
-   static void Read(Object& object, std::istream& istr);
-   static void Read(Array& array, std::istream& istr);
-   static void Read(String& string, std::istream& istr);
-   static void Read(Number& number, std::istream& istr);
-   static void Read(Boolean& boolean, std::istream& istr);
-   static void Read(Null& null, std::istream& istr);
+   static void Read(Object& object, std::wistream& istr);
+   static void Read(Array& array, std::wistream& istr);
+   static void Read(String& string, std::wistream& istr);
+   static void Read(Number& number, std::wistream& istr);
+   static void Read(Boolean& boolean, std::wistream& istr);
+   static void Read(Null& null, std::wistream& istr);
 
    // ...otherwise, if you don't know, call this & visit it
-   static void Read(UnknownElement& elementRoot, std::istream& istr);
+   static void Read(UnknownElement& elementRoot, std::wistream& istr);
 
 private:
    struct Token
@@ -84,7 +84,7 @@ private:
       };
 
       Type nType;
-      std::string sValue;
+      std::wstring sValue;
 
       // for malformed file debugging
       Reader::Location locBegin;
@@ -96,15 +96,15 @@ private:
    typedef std::vector<Token> Tokens;
 
    template <typename ElementTypeT>   
-   static void Read_i(ElementTypeT& element, std::istream& istr);
+   static void Read_i(ElementTypeT& element, std::wistream& istr);
 
    // scanning istream into token sequence
    void Scan(Tokens& tokens, InputStream& inputStream);
 
    void EatWhiteSpace(InputStream& inputStream);
-   void MatchString(std::string& sValue, InputStream& inputStream);
-   void MatchNumber(std::string& sNumber, InputStream& inputStream);
-   void MatchExpectedString(const std::string& sExpected, InputStream& inputStream);
+   void MatchString(std::wstring& sValue, InputStream& inputStream);
+   void MatchNumber(std::wstring& sNumber, InputStream& inputStream);
+   void MatchExpectedString(const std::wstring& sExpected, InputStream& inputStream);
 
    // parsing token sequence into element structure
    void Parse(UnknownElement& element, TokenStream& tokenStream);
@@ -115,7 +115,7 @@ private:
    void Parse(Boolean& boolean, TokenStream& tokenStream);
    void Parse(Null& null, TokenStream& tokenStream);
 
-   const std::string& MatchExpectedToken(Token::Type nExpected, TokenStream& tokenStream);
+   const std::wstring& MatchExpectedToken(Token::Type nExpected, TokenStream& tokenStream);
 };
 
 
