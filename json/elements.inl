@@ -5,6 +5,11 @@ Project Webpage: http://cajun-jsonapi.sourceforge.net/
 Author: Terry Caton
 
 ***********************************************/
+/*
+* Copyright (C) 2014 James Higley
+
+Changed from std:string to std:wstring
+*/
 
 #include "visitor.h"
 #include "reader.h"
