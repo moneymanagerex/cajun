@@ -5,6 +5,11 @@ Project Webpage: http://cajun-jsonapi.sourceforge.net/
 Author: Terry Caton
 
 ***********************************************/
+/*
+* Copyright (C) 2014 James Higley
+
+Changed from std:string to std:wstring
+*/
 
 #pragma once
 
@@ -38,7 +43,7 @@ class TrivialType_T;
 
 typedef TrivialType_T<double> Number;
 typedef TrivialType_T<bool> Boolean;
-typedef TrivialType_T<std::string> String;
+typedef TrivialType_T<std::wstring> String;
 
 class Object;
 class Array;
@@ -65,7 +70,7 @@ public:
 // The cast operators provide convenient implicit downcasting, while
 //  preserving dynamic type safety by throwing an exception during a
 //  a bad cast. 
-// The object & array element index operators (operators [std::string]
+// The object & array element index operators (operators [std::wstring]
 //  and [size_t]) provide convenient, quick access to child elements.
 //  They are a logical extension of the cast operators. These child
 //  element accesses can be chained together, allowing the following
@@ -106,8 +111,8 @@ public:
    operator Null& ();
 
    // provides quick access to children when real element type is object
-   UnknownElement& operator[] (const std::string& key);
-   const UnknownElement& operator[] (const std::string& key) const;
+   UnknownElement& operator[] (const std::wstring& key);
+   const UnknownElement& operator[] (const std::wstring& key) const;
 
    // provides quick access to children when real element type is array
    UnknownElement& operator[] (size_t index);
@@ -182,18 +187,18 @@ private:
 
 
 /////////////////////////////////////////////////////////////////////////////////
-// Object - mimics std::map<std::string, UnknownElement>. The member value 
+// Object - mimics std::map<std::wstring, UnknownElement>. The member value 
 //  contents are effectively heterogeneous thanks to the UnknownElement class
 
 class Object
 {
 public:
    struct Member {
-      Member(const std::string& nameIn = std::string(), const UnknownElement& elementIn = UnknownElement());
+      Member(const std::wstring& nameIn = std::wstring(), const UnknownElement& elementIn = UnknownElement());
 
       bool operator == (const Member& member) const;
 
-      std::string name;
+      std::wstring name;
       UnknownElement element;
    };
 
@@ -211,16 +216,16 @@ public:
    size_t Size() const;
    bool Empty() const;
 
-   iterator Find(const std::string& name);
-   const_iterator Find(const std::string& name) const;
+   iterator Find(const std::wstring& name);
+   const_iterator Find(const std::wstring& name) const;
 
    iterator Insert(const Member& member);
    iterator Insert(const Member& member, iterator itWhere);
    iterator Erase(iterator itWhere);
    void Clear();
 
-   UnknownElement& operator [](const std::string& name);
-   const UnknownElement& operator [](const std::string& name) const;
+   UnknownElement& operator [](const std::wstring& name);
+   const UnknownElement& operator [](const std::wstring& name) const;
 
 private:
    class Finder;
