@@ -268,7 +268,20 @@ inline Object::iterator Object::Insert(const Member& member, iterator itWhere)
    iterator it = Find(member.name);
    if (it != m_Members.end())
    {
-       std::string sMessage = "Object member already exists: " + member.name;
+       std::string str;
+       size_t len = member.name.length();
+       if (len > 0)
+       {
+           char* w = new char[len + 1];
+           size_t s = wcstombs(w, member.name.c_str(), len);
+           if (s != len)
+               w[0] = 0;
+           else
+               w[s] = 0;
+           str = std::string(w);
+           delete[] w;
+       }
+       std::string sMessage = "Object member already exists: " + str;
        throw Exception(sMessage);
    }
 
@@ -298,7 +311,20 @@ inline const UnknownElement& Object::operator [](const std::wstring& name) const
    const_iterator it = Find(name);
    if (it == End())
    {
-       std::string sMessage = "Object member not found: " + name;
+       std::string str;
+       size_t len = name.length();
+       if (len > 0)
+       {
+           char* w = new char[len + 1];
+           size_t s = wcstombs(w, name.c_str(), len);
+           if (s != len)
+               w[0] = 0;
+           else
+               w[s] = 0;
+           str = std::string(w);
+           delete[] w;
+       }
+       std::string sMessage = "Object member not found: " + str;
        throw Exception(sMessage);
    }
    return it->element;

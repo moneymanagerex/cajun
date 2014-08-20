@@ -153,7 +153,20 @@ void Reader::Read_i(ElementTypeT& element, std::wistream& istr)
    if (tokenStream.EOS() == false)
    {
       const Token& token = tokenStream.Peek();
-      std::string sMessage = "Expected End of token stream; found " + token.sValue;
+      std::string str;
+      size_t len = token.sValue.length();
+      if (len > 0)
+      {
+          char* w = new char[len + 1];
+          size_t s = wcstombs(w, token.sValue.c_str(), len);
+          if (s != len)
+              w[0] = 0;
+          else
+              w[s] = 0;
+          str = std::string(w);
+          delete[] w;
+      }
+      std::string sMessage = "Expected End of token stream; found " + str;
       throw ParseException(sMessage, token.locBegin, token.locEnd);
    }
 }
@@ -249,7 +262,20 @@ inline void Reader::Scan(Tokens& tokens, InputStream& inputStream)
             break;
 
          default: {
-            std::string sErrorMessage = "Unexpected character in stream: " + sChar;
+             std::string str;
+             size_t len = sChar.length();
+             if (len > 0)
+             {
+                 char* w = new char[len + 1];
+                 size_t s = wcstombs(w, sChar.c_str(), len);
+                 if (s != len)
+                     w[0] = 0;
+                 else
+                     w[s] = 0;
+                 str = std::string(w);
+                 delete[] w;
+             }
+             std::string sErrorMessage = "Unexpected character in stream: " + str;
             throw ScanException(sErrorMessage, inputStream.GetLocation());
          }
       }
@@ -275,7 +301,20 @@ inline void Reader::MatchExpectedString(const std::wstring& sExpected, InputStre
       if (inputStream.EOS() ||      // did we reach the end before finding what we're looking for...
           inputStream.Get() != *it) // ...or did we find something different?
       {
-         std::string sMessage = "Expected string: " + sExpected;
+          std::string str;
+          size_t len = sExpected.length();
+          if (len > 0)
+          {
+              char* w = new char[len + 1];
+              size_t s = wcstombs(w, sExpected.c_str(), len);
+              if (s != len)
+                  w[0] = 0;
+              else
+                  w[s] = 0;
+              str = std::string(w);
+              delete[] w;
+          }
+          std::string sMessage = "Expected string: " + str;
          throw ScanException(sMessage, inputStream.GetLocation());
       }
    }
@@ -309,8 +348,10 @@ inline void Reader::MatchString(std::wstring& string, InputStream& inputStream)
             case L't':      string.push_back(L'\t');    break;
             case L'u':      // TODO: what do we do with this?
             default: {
-               std::string sMessage = "Unrecognized escape sequence found in string: \\" + c;
-               throw ScanException(sMessage, inputStream.GetLocation());
+                char w;
+                wcstombs(&w, &c, 1);
+                std::string sMessage = std::string("Unrecognized escape sequence found in string: \\") + w;
+                throw ScanException(sMessage, inputStream.GetLocation());
             }
          }
       }
@@ -392,8 +433,21 @@ inline void Reader::Parse(UnknownElement& element, Reader::TokenStream& tokenStr
 
       default:
       {
-         std::string sMessage = "Unexpected token: " + token.sValue;
-         throw ParseException(sMessage, token.locBegin, token.locEnd);
+          std::string str;
+          size_t len = token.sValue.length();
+          if (len > 0)
+          {
+              char* w = new char[len + 1];
+              size_t s = wcstombs(w, token.sValue.c_str(), len);
+              if (s != len)
+                  w[0] = 0;
+              else
+                  w[s] = 0;
+              str = std::string(w);
+              delete[] w;
+          }
+          std::string sMessage = "Unexpected token: " + str;
+          throw ParseException(sMessage, token.locBegin, token.locEnd);
       }
    }
 }
@@ -427,8 +481,21 @@ inline void Reader::Parse(Object& object, Reader::TokenStream& tokenStream)
       catch (Exception&)
       {
          // must be a duplicate name
-         std::string sMessage = "Duplicate object member token: " + member.name; 
-         throw ParseException(sMessage, tokenName.locBegin, tokenName.locEnd);
+          std::string str;
+          size_t len = member.name.length();
+          if (len > 0)
+          {
+              char* w = new char[len + 1];
+              size_t s = wcstombs(w, member.name.c_str(), len);
+              if (s != len)
+                  w[0] = 0;
+              else
+                  w[s] = 0;
+              str = std::string(w);
+              delete[] w;
+          }
+          std::string sMessage = "Duplicate object member token: " + str;
+          throw ParseException(sMessage, tokenName.locBegin, tokenName.locEnd);
       }
 
       bContinue = (tokenStream.EOS() == false &&
@@ -482,8 +549,11 @@ inline void Reader::Parse(Number& number, Reader::TokenStream& tokenStream)
    // did we consume all characters in the token?
    if (iStr.eof() == false)
    {
-      std::string sMessage = "Unexpected character in NUMBER token: " + iStr.peek();
-      throw ParseException(sMessage, currentToken.locBegin, currentToken.locEnd);
+       wchar_t wc = iStr.peek();
+       char w;
+       wcstombs(&w, &wc, 1);
+       std::string sMessage = std::string("Unexpected character in NUMBER token: ") + w;
+       throw ParseException(sMessage, currentToken.locBegin, currentToken.locEnd);
    }
 
    number = dValue;
@@ -514,8 +584,21 @@ inline const std::wstring& Reader::MatchExpectedToken(Token::Type nExpected, Rea
    const Token& token = tokenStream.Get();
    if (token.nType != nExpected)
    {
-      std::string sMessage = "Unexpected token: " + token.sValue;
-      throw ParseException(sMessage, token.locBegin, token.locEnd);
+       std::string str;
+       size_t len = token.sValue.length();
+       if (len > 0)
+       {
+           char* w = new char[len + 1];
+           size_t s = wcstombs(w, token.sValue.c_str(), len);
+           if (s != len)
+               w[0] = 0;
+           else
+               w[s] = 0;
+           str = std::string(w);
+           delete[] w;
+       }
+       std::string sMessage = "Unexpected token: " + str;
+       throw ParseException(sMessage, token.locBegin, token.locEnd);
    }
 
    return token.sValue;
